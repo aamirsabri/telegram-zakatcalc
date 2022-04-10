@@ -1,0 +1,9 @@
+datetime
+logging
+telegram.ext
+requests
+bs4
+typing
+telegram
+re
+fpdf
