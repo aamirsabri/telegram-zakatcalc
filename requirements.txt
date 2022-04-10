@@ -7,3 +7,5 @@ typing
 telegram
 re
 fpdf
+dnspython
+gunicorn
