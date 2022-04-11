@@ -1,10 +1,9 @@
 datetime
 logging
-telegram.ext
+python-telegram-bot
 requests
 bs4
 typing
-telegram
 re
 fpdf
 dnspython
