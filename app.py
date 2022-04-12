@@ -11,7 +11,7 @@ import re
 from re import sub
 from fpdf import FPDF
 import os
-PORT = int(os.environ.get('PORT', 5000))
+PORT = int(os.environ.get('PORT', 8443))
 
 TOKEN = "5186791158:AAGqK7ZSlzDch0mp1yfrOlh2-3x0d5QEQuQ"
 NOT_VALID_NUMBER = -99
