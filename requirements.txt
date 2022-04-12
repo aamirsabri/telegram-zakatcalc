@@ -3,7 +3,6 @@ python-telegram-bot
 requests
 bs4
 typing
-re
 fpdf
 dnspython
 gunicorn
