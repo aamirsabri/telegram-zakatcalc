@@ -1,9 +1,9 @@
 datetime
-logging==0.4.9.6
 python-telegram-bot
 requests
 bs4
 typing
+logging==0.4.9.6
 re
 fpdf
 dnspython
