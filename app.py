@@ -1,13 +1,9 @@
 from datetime import datetime
 import enum
 import logging
-from types import CoroutineType
-from numpy import empty
 from telegram.ext import *
-import responses
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
 import logging
 from typing import Dict
 from telegram import KeyboardButton, ReplyKeyboardMarkup, Update, ReplyKeyboardRemove
