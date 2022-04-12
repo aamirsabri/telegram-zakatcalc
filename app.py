@@ -245,7 +245,7 @@ def get_price(metalType):
    
 def main():
     persistance = PicklePersistence(filename='myzakat9')
-    updater = Updater(token=TOKEN,persistence=persistance)
+    updater = Updater(token=TOKEN,persistence=persistance,use_context=True)
     dispatcher = updater.dispatcher
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start',start)],
@@ -267,7 +267,12 @@ def main():
         persistent=True,
     )
     dispatcher.add_handler(conv_handler)
-    updater.start_polling()
+#     updater.start_polling()
+    updater.start_webhook(
+        listen="0.0.0.0",
+        port=8443,
+        url_path=TOKEN,
+        webhook_url='https://zakatbot-telegram.herokuapp.com/' + TOKEN)
     updater.idle()
 
 if __name__ =="__main__":
