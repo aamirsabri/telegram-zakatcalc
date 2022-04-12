@@ -268,7 +268,7 @@ def main():
 #     updater.start_polling()
     updater.start_webhook(
         listen="0.0.0.0",
-        port=int(PORT),
+        port=8443,
         url_path=TOKEN)        
     updater.bot.setWebhook('https://zakatbot-telegram.herokuapp.com/' + TOKEN)
     updater.idle()
