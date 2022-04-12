@@ -1,1 +1,1 @@
-web: python3 app.py 8443
+web: python3 app.py
