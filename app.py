@@ -14,6 +14,8 @@ from telegram import KeyboardButton, ReplyKeyboardMarkup, Update, ReplyKeyboardR
 import re
 from re import sub
 from fpdf import FPDF
+import os
+PORT = int(os.environ.get('PORT', 5000))
 
 TOKEN = "5186791158:AAGqK7ZSlzDch0mp1yfrOlh2-3x0d5QEQuQ"
 NOT_VALID_NUMBER = -99
@@ -270,9 +272,9 @@ def main():
 #     updater.start_polling()
     updater.start_webhook(
         listen="0.0.0.0",
-        port=8443,
-        url_path=TOKEN,
-        webhook_url='https://zakatbot-telegram.herokuapp.com/' + TOKEN)
+        port=int(PORT),
+        url_path=TOKEN)        
+    updater.bot.setWebhook('https://zakatbot-telegram.herokuapp.com/' + TOKEN)
     updater.idle()
 
 if __name__ =="__main__":
