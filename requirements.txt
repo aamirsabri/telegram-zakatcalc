@@ -1,5 +1,5 @@
 datetime
-logging=0.4.9.6
+logging==0.4.9.6
 python-telegram-bot
 requests
 bs4
