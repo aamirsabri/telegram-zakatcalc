@@ -82,7 +82,7 @@ def calculate_zakat(key,value) -> float:
         totalZakat = totalZakat + float(value)
     elif key == MERCHANDISE.lower():
         totalZakat = totalZakat + float(value)
-    elif key == LIABILITY:
+    elif key == LIABILITY.lower():
         totalZakat = totalZakat - float(int(value))    
     elif key == 'other':
         totalZakat = totalZakat + float(value)
@@ -103,10 +103,21 @@ def create_pdf(user_data:Dict[str,str],username:str,totalZakat:str,currency:str,
     pdf.cell(200,15,txt=f"Zakat Caculation for ({username})\t\t\t\t{datetime.today().strftime('%d-%m-%Y')}",ln=1,align='C')
     totalValue = 0.0
     reply_text =""
+    liability = 0.0
     for key,value in user_data.items():
-        totalValue = totalValue + float(value)
-        pdf.cell(200,6,txt=f"{get_choice_string(key)} - {get_value_string(key,value,currency)}",ln=1)
+        if is_valid_choice(key):
+            if key == LIABILITY.lower():
+                liability = float(value)
+            if key == GOLD.lower():
+                totalValue = totalValue + (float(value) * float(gold_rate))
+            elif key == SILVER.lower():
+                totalValue = totalValue + (float(value) * float(silver_rate))
+            else:
+                totalValue = totalValue + float(value)
+            pdf.cell(200,6,txt=f"{get_choice_string(key)} - {get_value_string(key,value,currency)}",ln=1)
+
     pdf.cell(200,20,txt=f"Total Valuation : {totalValue}",ln=1,align='B')    
+    pdf.cell(200,5,txt=f"Zakat Payble on : {totalValue - liability}",ln=1)
     pdf.cell(200,10,txt=f"Total Zakat : {totalZakat}",ln=1)
     pdf.cell(200,25,txt="",ln=4,align='B')
     pdf.cell(200,5,txt="Note:",ln=1)
@@ -116,16 +127,23 @@ def create_pdf(user_data:Dict[str,str],username:str,totalZakat:str,currency:str,
     pdf.cell(200,5,txt="Total Merchandise : Row Material - Goods - Plots-House-Flats (purchased for selling or reselling purpose",ln=1)
     pdf.cell(200,5,txt="Total Dues : Loan / Any Dues / Remaining Bills / etc",ln=1)
     pdf.cell(200,30,txt="Donate to Dawateislami : https://dawateislamiindia.org",align='C',ln=7)
-    filename = f"{username} zakat20221.pdf"
-    pdf.output(f"{username} zakat20221.pdf")
+    pdf.cell(200,5,txt="For any suggession contact on : aamir.kashiri@gmail.com",align='C',ln=1)
+    filename = f"{username} zakat_{datetime.today().strftime('%d-%m-%Y')}.pdf"
+    pdf.output(filename)
     return filename
 
 def formatted_input(user_data:Dict[str,str]) -> str:
     reply_text = ""
     for key,value in user_data.items():
-        reply_text = f"{reply_text}\n{get_choice_string(key)} - {get_value_string(key,value,'INR')}"
+        if is_valid_choice(key):
+            reply_text = f"{reply_text}\n{get_choice_string(key)} - {get_value_string(key,value,'INR')}"
         print(reply_text)
     return reply_text
+
+def is_valid_choice(key:str) -> bool:
+    if (key == GOLD.lower() or key == SILVER.lower() or key == CURRENCY.lower() or key == MERCHANDISE.lower() or key == LIABILITY.lower()):
+        return True
+    return False
 
 
 def get_choice_string(key:str) -> str:
@@ -140,7 +158,7 @@ def get_choice_string(key:str) -> str:
     elif key == LIABILITY.lower():
         return "All Dues"   
     else:
-        return key
+        return
 
 def get_value_string(key:str,value:str,currency:str) -> str:
     if key == GOLD.lower():
@@ -149,9 +167,15 @@ def get_value_string(key:str,value:str,currency:str) -> str:
         return f"{value} gm"
     elif key == LIABILITY.lower():
         return f"(-{value})"
-    else:
+    elif (key == CURRENCY.lower() or key == MERCHANDISE.lower()):
         return f"{value} {currency}"
-    
+    else:
+        return
+
+def clear_user_data(user_data:Dict[str,str]):
+    for key,value in user_data.items():
+        user_data[key] = 0
+        
 
 def done(update:Update,context:CallbackContext):
     final_result = formatted_input(user_data=context.user_data)
@@ -167,19 +191,26 @@ def done(update:Update,context:CallbackContext):
     zakat_document = open(filename,"rb")
     update.message.reply_document(filename="zakat_calculation.pdf",caption="Your Zakat Calculation",document=zakat_document)
     zakat_document.close()
-
     
-    didocument = open("dibooklet.pdf","rb")
-    update.message.reply_document(filename="dibooklet.pdf",caption="Dawateislami India Booklet",document=didocument)
-    didocument.close()
-
-    donationguide = open("donationguide.mp4","rb")
-    update.message.reply_video(donationguide,caption="How to Donate")
-    donationguide.close()
+    
+    # didocument = open("dibooklet.pdf","rb")
+    # update.message.reply_document(filename="dibooklet.pdf",caption="Dawateislami India Booklet",document=didocument)
+    # didocument.close()
+    
+    # donationguide = open("donationguide.mp4","rb")
+    # update.message.reply_video(donationguide,caption="How to Donate")
+    # donationguide.close()
     # update.message.reply_photo(,caption="Donate Dawateislami from your Zakat, Sadqa ")
-    # context.user_data.clear()
+    clear_user_data(context.user_data)
+    
     return ConversationHandler.END
    
+def create_payment_intent():
+    payment_intent = stripe.PaymentIntent.create(
+        currency= 'inr',
+        
+    )
+
 def camel_case(s):
   s = sub(r"(_|-)+", " ", s).title().replace(" ", "")
   return ''.join([s[0].lower(), s[1:]])
@@ -192,7 +223,7 @@ def result(user_data: Dict[str,str]) -> str:
 
 def recieve_information(update:Update,context:CallbackContext):
     print(context.user_data)
-    data = update.message.text.lower()
+    data = update.message.text
     if isChoice(data) == True:
         context.user_data['choice'] = update.message.text
         print(f"in recieve  {data}")
@@ -242,9 +273,10 @@ def get_price(metalType):
     return metal_price[2:]
    
 def main():
-    persistance = PicklePersistence(filename='myzakat9')
-    updater = Updater(token=TOKEN,persistence=persistance,use_context=True)
+    persistance = PicklePersistence(filename='myzakat13')
+    updater = Updater(token=TOKEN,persistence=persistance)
     dispatcher = updater.dispatcher
+    
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start',start)],
         states= {
