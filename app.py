@@ -193,13 +193,13 @@ def done(update:Update,context:CallbackContext):
     zakat_document.close()
     
     
-    # didocument = open("dibooklet.pdf","rb")
-    # update.message.reply_document(filename="dibooklet.pdf",caption="Dawateislami India Booklet",document=didocument)
-    # didocument.close()
+    didocument = open("dibooklet.pdf","rb")
+    update.message.reply_document(filename="dibooklet.pdf",caption="Dawateislami India Booklet",document=didocument)
+    didocument.close()
     
-    # donationguide = open("donationguide.mp4","rb")
-    # update.message.reply_video(donationguide,caption="How to Donate")
-    # donationguide.close()
+    donationguide = open("donationguide.mp4","rb")
+    update.message.reply_video(donationguide,caption="How to Donate")
+    donationguide.close()
     # update.message.reply_photo(,caption="Donate Dawateislami from your Zakat, Sadqa ")
     clear_user_data(context.user_data)
     
